@@ -1,0 +1,5 @@
+org文件转word或者html：
+第一步使用notepade++将org文件中的\n替换为\n\n(即增加文本行之间的换行)
+第二步在linux上使用emacs打开org, 使用快捷键ctrl+C ==> Ctrl+e 转化为odt或者html
+第三步在windows上使用word打开odt文件另存为docx格式即可
+第四步格式微调

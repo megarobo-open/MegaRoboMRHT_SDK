@@ -1,0 +1,5512 @@
+#+TITLE: MRHT接口C函数文档
+
+#+AUTHOR: nieshizhong
+
+#+OPTIONS: ^:nil
+
+
+
+* device.h
+
+** int mrgFindGateWay(int  bus, char *output, int len, int method);
+
+   查找网关。
+
+   bus :总线类型. ＝0，网络接口；＝1，USBTMC接口
+
+   output：查找到的设备描述符，多个设备之间以逗号分隔
+
+   len : output的最大容量（字节个数）
+
+   method:当网关设备使用网络连接时，在查找网关设备时有两种查找方式：
+
+   method = 0,使用VISA查找方式；
+
+   method = 1,使用UDP方式查找
+
+   返回值：查找到的设备个数
+
+
+
+** int mrgOpenGateWay(char *desc, int timeout_ms);
+
+   打开网关设备。
+
+   desc :findGateWay()返回的设备描述符
+
+   timeout：设备通讯时的最大超时时间
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgCloseGateWay(ViSession  vi);
+
+   关闭网关设备。
+
+   desc :findGateWay()返回的设备描述符
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGateWaySendCmd(ViSession  vi, char *cmd, int len);
+
+   向网关直接发送设置命令。
+
+   vi :设备句柄
+
+   cmd：要发送的设置命令
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGateWayRead(ViSession  vi, char * output, int wantlen);
+
+   向网关发送读取命令。
+
+   vi :设备句柄
+
+   output:查询命令的返回
+
+   wantlen:期望查询命令返回的长度，即output的长度
+
+   返回值：实际返回的数据长度
+
+
+
+** int mrgGateWayQuery(ViSession  vi, char *cmd, char *output, int wantlen);
+
+   向网关直接发送查询命令。
+
+   vi :设备句柄
+
+   cmd：要发送的设置命令
+
+   len:命令长度
+
+   output:查询命令的返回
+
+   wantlen:期望查询命令返回的长度，即output的长度
+
+   返回值：实际返回的数据长度
+
+
+
+** int mrgGateWayIDNQuery(ViSession  vi, char *idn);
+
+   查询网关设备的*IDN。
+
+   idn :返回的设备描述符
+
+   len：idn缓存长度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgFindDevice(ViSession vi, int timeout_ms);
+
+   查找连接在网关上的设备。
+
+   vi :visa设备句柄
+
+   timeout为最长查找时间，单位：ms.
+
+   返回值：查找到的设备个数
+
+
+
+** int mrgGetDeviceName(ViSession vi, int *names);
+
+   获取所有与网关相连的设备名称
+
+   vi :visa设备句柄
+
+   names：返回名称的存放处
+
+   names_len：存储区的长度
+
+   返回值：设备名称个数
+
+
+
+** int mrgGetDeviceType(ViSession vi, int name, char *type);
+
+   获取指定设备的类型
+
+   vi :visa设备句柄
+
+   type：返回设备类型的存储区
+
+   type可能的取值： “MRQM2304”，“MRQM2305”，“MRQM2310”，“MRQC23D”，“MRQC23S”，
+
+   type_len：存储区的长度，长度最少8个字节
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetDeviceChannelCount(ViSession vi, int name);
+
+   查询指定设备的通道个数,name为仪器名
+
+   vi :visa设备句柄
+
+   name:机器人的名字
+
+   返回值：大于零，表示通道个数，小于或等于零表示失败
+
+
+
+** int mrgGetDeviceInfo(ViSession vi, int name, char *info);
+
+   获取指定设备的信息，包括（序列号：硬件版本号：软件版本号：boot版本号：逻辑版本号）
+
+   vi :visa设备句柄
+
+   info：返回信息的存储区
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetDeviceSoftVersion(ViSession vi, int name, char *version);
+
+   获取指定设备的软件版本号
+
+   vi :visa设备句柄
+
+   version：返回设备版本号的存储区
+
+   len：存储区的长度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetDeviceFirmWareHard(ViSession vi, int name, char *buf);
+
+   查询设备硬件版本号
+
+   vi :visa设备句柄
+
+   name:机器人的名字
+
+   buf:设备硬件版本号,长度最少12个字节
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetDeviceFirmWareBoot(ViSession vi, int name, char *buf);
+
+   查询设备BOOT版本号
+
+   vi :visa设备句柄
+
+   name:机器人的名字
+
+   buf:设备BOOT版本号
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetDeviceFirmWareFpga(ViSession vi, int name, char *buf);
+
+   查询设备逻辑版本号
+
+   vi :visa设备句柄
+
+   name:机器人的名字
+
+   buf:设备逻辑版本号
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgWriteDeviceSerial(ViSession  vi, int name, char *serial);
+
+   写入设备的序列号
+
+   idn :返回的设备描述符
+
+   len：idn缓存长度
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数为工程接口函数，不对外开放
+
+
+
+** int mrgGetDeviceSerialNumber(ViSession vi, int name, char *serial);
+
+   获取指定设备的序列号
+
+   vi :visa设备句柄
+
+   serial：返回设备序列号的存储区
+
+   len：存储区的长度，长度最少18个字节
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgIdentify(ViSession vi, int state);
+
+   识别网关设备（ON时，LED1常亮；OFF时LED闪烁）
+
+   vi :visa设备句柄
+
+   name：机器人
+
+   state：识别状态
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgModeSwitch(ViSession vi, int mode);
+
+   切换 MRH - T 的模式
+
+   vi :visa设备句柄
+
+   mode : MRH - T 的模式，取值范围： [0,1]
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetXinState(ViSession vi, int *state);
+
+   读取MRHT的IO状态
+
+   vi :visa设备句柄
+
+   state : xin的状态,低四位
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSetYoutState(ViSession vi, int yout, int state);
+
+   设置MRHT的IO输出状态
+
+   vi :visa设备句柄
+
+   yout : 0表示Y1,1表示Y2
+
+   state : YOUT的状态,0表示低电平,1表示高电平
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+
+
+* megarobot.h
+
+** MRX_TYPE(enum)
+
+|-----------------+---|
+
+| MRX_TYPE_T4     | 0 |
+
+| MRX_TYPE_AS     | 1 |
+
+| MRX_TYPE_H2     | 2 |
+
+| MRX_TYPE_DELTA  | 3 |
+
+| MRX_TYPE_RAW    | 4 |
+
+| MRX_TYPE_OTHER  | 5 |
+
+| MRX_TYPE_UNKOWN | 6 |
+
+|-----------------+---|
+
+
+
+** int mrgBuildRobot(ViSession vi, char *robotType, char *chlist, int *robotname);
+
+   构建一个机器人
+
+   vi :visa设备句柄
+
+   robotType：要构建的机器人类型（MRX-T4,MRX-H2,MRX-DELTA）
+
+   chlist：设备列表 “0@512,1@512,”
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgBuildRobotNamed(ViSession vi, char *robotType, char *devList, int robotid, int *robotname);
+
+   构建一个机器人,机器人的名子由用户指定
+
+   vi :visa设备句柄
+
+   robotType：要构建的机器人类型（MRX-T4,MRX-H2,MRX-DELTA）
+
+   devList：设备列表 “0@512,1@512,”
+
+   robotid: 用户设定的机器人名子
+
+   robotname :返回的机器人名子
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgDeleteRobot(ViSession vi, int name);
+
+   删除当前机器人
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   返回值：0表示执行成功，－1表示执行失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotLinks(ViSession vi, int name, float *links, int link_count);
+
+   设置当前机器人的构形的连秆长度  单位:mm
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   返回值：小于零表示出错
+
+   说明：对T4来说: links[0] 基座高度;links[1] 大臂长度 ;links[2] 小臂长度
+
+   对H2来说: links[0] 宽;links[1] 高 ;links[2] 滑块宽度;links[3] 滑块高度,links[4] 模具类型;links[5] 齿数;
+
+
+
+** int mrgGetRobotLinks(ViSession vi, int name, float *links, int *link_count);
+
+   获取当前机器人的构形的连秆长度  单位:mm
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   link_count: 获取到的连秆长度
+
+   返回值：0成功,否则失败
+
+   说明：
+
+
+
+** int mrgGetRobotType(ViSession vi, int name);
+
+   查询当前机器人的构形
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   返回值：小于零表示出错。 0：MRX-T4;1:MRX-AS;2:MRX-H2,3:MRX-DELTA;4:MRX-RAW
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgExportRobotConfig(ViSession vi);
+
+   保存当前系统中所有机器人构形
+
+   vi :visa设备句柄
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：
+
+
+
+** int mrgExportRobotConfig_default(ViSession vi);
+
+   保存当前系统中所有机器人构形为默认配置文件
+
+   vi :visa设备句柄
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：工程命令，不对外开放
+
+
+
+** int mrgRestoreRobotConfig(ViSession vi);
+
+   恢复上次保存的配置
+
+   vi :visa设备句柄
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：
+
+
+
+** int mrgGetRobotConfigState(ViSession vi);
+
+   查询导入或导出配置文件的状态
+
+   vi :visa设备句柄
+
+   返回值：0表示执行完成；1表示正在执行；－1表示执行过程中出错
+
+   说明：
+
+
+
+** int mrgSetRobotMachineSerialNum(ViSession vi, int name, char *sn);
+
+   设置当前机器人所使用的机械结构的序列号
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   serial:机械结构序列号
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotMachineSerialNum(ViSession vi, int name, char*serial);
+
+   查询当前机器人所使用的机械结构的序列号
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   serial:机械结构序列号
+
+   返回值：0表示执行正确，否则表示执行失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotSubType(ViSession vi, int name, int subtype);
+
+   设置当前机器人构形下的子类型
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   subtype:子类型。 对于H2来说，0表示小H2，1表示中H2（802x494）；2表示大H2（891x769）
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotSubType(ViSession vi, int name);
+
+   查询当前机器人构形下的子类型
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   返回值：子类型。 对于H2来说，0表示小H2，1表示中H2（802x494）；2表示大H2（891x769）
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotCoordinateSystem(ViSession vi, int name, int coord);
+
+   设置当前机器人的坐标系
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   coord:坐标系索引（详情参考对应的命令系统）
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotCoordinateSystem(ViSession vi, int name);
+
+   查询当前机器人的坐标系
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   返回值：坐标系索引，（详情参考对应的命令系统）
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotCount(ViSession vi);
+
+   查询CAN网络中机器人的个数
+
+   vi :visa设备句柄
+
+   返回值：返回机器人个数
+
+
+
+** int mrgGetRobotName(ViSession vi, int *robotnames);
+
+   查询CAN网络中所有机器人的名子
+
+   vi :visa设备句柄
+
+   robotnames：输出参数，机器人名称集
+
+   返回值：返回机器人个数
+
+
+
+** int mrgGetRobotDevice(ViSession vi, int robotname, int *device);
+
+   查询当前机器人的所使用的设备
+
+   robotname: 机器人名称
+
+   vi :visa设备句柄
+
+   device：设备名称列表
+
+   返回值：返回所使用的设备个数
+
+
+
+** int mrgSetRobotProjectZero(ViSession vi, int name, float x, float y, float z);
+
+   设置当前机器人的项目零点
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   x,y，z:项目零点值（x,y,z）
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotProjectZero(ViSession vi, int name, float *x, float *y, float *z);
+
+   查询当前机器人的项目零点
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   x,y,z: 输出参数，项目零点值
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotAxisZero(ViSession vi, int name, float x, float y, float z);
+
+   设置当前机器人的校准零点
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   x,y，z:校准零点值（x,y,z）
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotAxisZero(ViSession vi, int name, float *x, float *y, float *z);
+
+   查询当前机器人的校准零点
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   x,y,z: 输出参数，校准零点值
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotSoftWareLimit(ViSession vi, int name, int type, float x, float y, float z);
+
+   设置当前机器人的软件限位
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   type: 正向限位还是负向限位。 0：表示正向限位；1表示负向限位
+
+   x,y，z:限位值（x,y,z）
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgGetRobotSoftWareLimit(ViSession vi, int name, int type, float *x, float *y, float *z);
+
+   查询当前机器人的校准零点
+
+   vi :visa设备句柄
+
+   name:机器人名称
+
+   type: 正向限位还是负向限位。 0：表示正向限位；1表示负向限位
+
+   x,y,z: 输出参数，校准零点值
+
+   返回值：0表示执行成功，－1表示失败
+
+   说明：此函数目前只对H2有效
+
+
+
+** int mrgSetRobotWavetable(ViSession vi, int name, int wavetable);
+
+   设置指定机器人的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:波表索引值，取值范围0~9
+
+   返回值：0表示设置成功，否则表示设置失败
+
+
+
+** int mrgRobotWavetableQuery(ViSession vi, int name);
+
+   查询指定机器人的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:波表索引值，取值范围0~9
+
+   返回值：大于0表示波表索引，小于零表示查询失败
+
+
+
+** int mrgRobotRun(ViSession vi, int name, int wavetable);
+
+   启动机器人的运行
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   返回值：0表示启动成功，否则表示启动失败
+
+
+
+** int mrgRobotStop(ViSession vi, int name, int wavetable);
+
+   停止机器人的运行
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   返回值：0表示停止成功，否则表示停止失败
+
+
+
+** int mrgGetRobotStates(ViSession vi, int name, int wavetable, char *state);
+
+   查询机器人运行状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   返回值：0表示等待成功，－1：表示出错
+
+
+
+** int mrgRobotWaitReady(ViSession vi, int name, int wavetable, int timeout_ms);
+
+   等待机器人的特定波表的ready状态（等待模块设备解算完成）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   timeout_ms：等待超时时间
+
+   返回值：0表示等待成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+
+
+** int mrgRobotWaitEnd(ViSession vi, int name, int wavetable, int timeout_ms);
+
+   等待机器人的特定波表的ready状态（等待模块设备解算完成）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   timeout_ms：等待超时时间
+
+   返回值：0表示等待成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时;-4:参数出错
+
+
+
+** int mrgRobotMove(ViSession vi, int name, int wavetable, float x, float y, float z, float time, int timeout_ms);
+
+   机器人从当前位置移动到指定位置（随机移动）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   x,y,z: 位置坐标
+
+   time : 移动到目标位置期望使用的时间
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   说明：绝对位置移动,末端保持不动
+
+
+
+** int mrgRobotMoveOn(ViSession vi, int name, int wavetable, float x, float y, float z, float speed);
+
+   机器人末端沿指定的方向持续运动
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   x,y,z: 方向向量
+
+   speed : 移动的速度。单位： 度/秒。
+
+   返回值：0表示执行成功，否则表示过程中出错
+
+   说明：非阻塞函数
+
+
+
+** int mrgRobotAxisMoveOn(ViSession vi, int name, int wavetable, int ax, float speed);
+
+   机器人末端沿指定的坐标轴持续运动
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   ax: 坐标轴，0表示X轴;1表示Y轴 ; 2表示Z轴
+
+   speed : 移动的速度。单位： 度/秒。speed的符号决定方向，speed大于零 ，表示正方向。
+
+   返回值：0表示执行成功，否则表示过程中出错
+
+   说明：非阻塞函数，此命令只对H2有效
+
+
+
+** int mrgRobotAxisMoveJog(ViSession vi, int name, int wavetable, int ax, float cr_time, float cr_speed, float speed);
+
+   机器人末端沿指定的坐标轴持续运动(阶跃运行）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   ax: 坐标轴，0表示X轴;1表示Y轴 ; 2表示Z轴
+
+   cr_time：爬升时间
+
+   cr_speed：爬升的速度
+
+   speed : 移动的保持速度。单位： 度/秒。speed的符号决定方向，speed大于零 ，表示正方向。
+
+   返回值：0表示执行成功，否则表示过程中出错
+
+   说明：非阻塞函数,此命令只对H2有效
+
+
+
+** int mrgRobotRelMove(ViSession vi, int name, int wavetable, float x, float y, float z, float time, int timeout_ms);
+
+   机器人从当前位置移动给定的距离（随机移动）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   x,y,z: 位置坐标
+
+   time : 移动到目标位置期望使用的时间
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   说明：相对位置移动,末端保持不动
+
+
+
+** int mrgRobotMoveL(ViSession vi, int name, int wavetable, float x, float y, float z, float time, int timeout_ms);
+
+   机器人从当前位置移动到指定位置（直线移动）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   x,y,z: 位置坐标
+
+   time : 移动到目标位置期望使用的时间
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   说明：绝对位置移动,末端保持不动
+
+
+
+** int mrgRobotRelMoveL(ViSession vi, int name, int wavetable, float x, float y, float z, float time, int timeout_ms);
+
+   机器人从当前位置移动给定的距离（直线移动）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable ：波表索引，－1表示使用默认索引（调用mrgSetRobotWavetable设置的波表索引）
+
+   x,y,z: 位置坐标
+
+   time : 移动到目标位置期望使用的时间
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   说明：相对位置移动,末端保持不动
+
+
+
+** int mrgSetRobotInterPolateMode(ViSession vi, int name, int mode);
+
+   设置机器人当前插值模式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   mode: 插值模式
+
+   返回值：0表示执行成功，－1：表示出错，
+
+
+
+** int mrgGetRobotInterPolateMode(ViSession vi, int name, int* mode);
+
+   查询机器人当前插值模式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   mode: 插值模式
+
+   返回值：0表示执行成功，－1：表示出错，
+
+
+
+** int mrgSetRobotInterPolateStep(ViSession vi, int name, float step);
+
+   设置机器人当前插值步长
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   step: 插值步长
+
+   返回值：0表示执行成功，－1：表示出错，
+
+
+
+** int mrgGetRobotInterPolateStep(ViSession vi, int name, float* step);
+
+   查询机器人当前插值步长
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   step: 插值步长
+
+   返回值：0表示执行成功，－1：表示出错，
+
+
+
+** int mrgSetRobotHomeWavetable(ViSession vi, int name, int wavetable);
+
+   设置机器人回零位时使用的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:波表索引
+
+   返回值：0表示执行成功，－1：表示出错
+
+
+
+** int mrgGetRobotHomeWavetable(ViSession vi, int name);
+
+   查询机器人回零位时使用的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable:返回的波表索引
+
+   返回值：大于等于0表示查询到的波表索引，小于零：表示出错
+
+
+
+** int mrgRobotGoHome(ViSession vi, int name, int timeout_ms);
+
+   机器人回零位操作
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   timeout_ms:表示等待超时时间
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示执行超时
+
+   说明：末端保持不动
+
+
+
+** int mrgRobotGoHomeWithParam(ViSession vi, int name, float param, int timeout_ms);
+
+   机器人回零位操作
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   param: 参数，对于T4来说，指的是时间，即在多秒时间内回到零位。对于H2来说，指的是回零位的速度，度/秒
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示执行超时
+
+   说明：末端保持不动
+
+
+
+** int mrgRobotGoHomeStop(ViSession vi, int name);
+
+   停止机器人回零位操作
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，-1:表示失败
+
+
+
+** int mrgRobotWaitHomeEnd(ViSession vi, int name, int timeout_ms);
+
+   等待机器人回零位结束状态（等待运行完成）
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   timeout_ms：等待超时时间，为零表示无限等待
+
+   返回值：0表示等待成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+
+
+** int mrgGetRobotHomeAngle(ViSession vi, int name, float *angles);
+
+   获取机器人在原点时的各关节的角度
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明：angles是不安全的，请在外部确保angles的空间足够
+
+
+
+** int mrgGetRobotHomePosition(ViSession vi, int name, float *x, float *y, float* z);
+
+   获取机器人在零位时，末端的坐标点值
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgSetRobotHomeMode(ViSession vi, int name, int mode);
+
+   设置机器人的回零方式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   mode: 回零方式。 0： 先x后y ； 1：先y后x
+
+   返回值：0表示执行成功，－1：表示出错，
+
+   说明：此命令目前只对H2有效
+
+
+
+** int mrgGetRobotHomeMode(ViSession vi, int name);
+
+   查询机器人的回零方式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：大于等于0表示回零方式，否则表示出错，
+
+   说明：此命令目前只对H2有效
+
+
+
+** int mrgGetRobotHomeRequire(ViSession vi, int name);
+
+   查询机器人的是否需要回零
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：1表示需要回零 ，0表示不需要回零，小于零表示出错，
+
+   说明：MRHT在构建机器人后,第一件事就是回零.如果不回零,禁止对机器人的操作
+
+
+
+** int mrgRobotPointClear(ViSession vi, int name);
+
+   给指定的机器人加载坐标点
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明：在调 用mrgRobotPointLoad（）函数前，请使用此函数清空上次的坐标点
+
+
+
+** int mrgRobotPointLoad(ViSession vi, int name, float x, float y, float z, float end, float time,int mod,float step);
+
+   给指定的机器人加载坐标点
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   x,y,z: 坐标点信息
+
+   end: 末端执行器电机转动的角度值
+
+   time: 时间，表示当前点在主时间轴上的位置
+
+   mod :是否插值
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明：此函数只是将上位机的坐标点信息下载到MRG中，MRG并未开始解算.
+
+   另，  在调用此函数开始下发坐标点前，务必使用mrgRobotPointClear()函数，通知机器人清空其缓存中的坐标点。
+
+
+
+** int mrgRobotPointResolve(ViSession vi, int name, int wavetable, int timeout_ms);
+
+   通知机器人开始解算其缓存中的坐标点，并下发给模块设备，直到模块设备解算完成
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable: 解算到指定的波表。 如果为－1，表示解算到当前机器人默认的波表中
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+
+
+** int mrgRobotPvtClear(ViSession vi, int name);
+
+   通知机器人清空PVT缓存
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明：在调 用mrgRobotPvtLoad（）函数前，请使用此函数清空上次的PVT
+
+
+
+** int mrgRobotPvtLoad(ViSession vi, int name, float p, float v, float t, int axle);
+
+   给指定的机器人加载坐标点
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   p,v,t: pvt信息
+
+   axle: 轴索引
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明：此函数只是将上位机的坐标点信息下载到MRG中，MRG并未开始解算.
+
+   另，  在调用此函数开始下发坐标点前，务必使用mrgRobotPvtClear()函数，通知机器人清空其缓存中的坐标点。
+
+
+
+** int mrgRobotPvtResolve(ViSession vi, int name, int wavetable, int timeout_ms);
+
+   通知机器人开始下发其缓存中的PVT到模块设备，直到模块设备解算完成
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable: 解算到指定的波表。 如果为－1，表示解算到当前机器人默认的波表中
+
+   timeout_ms:表示等待超时时间,0表示无限等待，－1表示不等待，立即返回
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+
+
+** int mrgRobotMotionFileImport(ViSession vi, int name,char* filename);
+
+   从存储器中，导入运动文件到机器人缓存中
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   filename: 点坐标文件名
+
+   返回值：0表示执行成功，否则表示失败
+
+
+
+** int mrgRobotMotionFileImportLocal(ViSession vi, int name, char* filename);
+
+   从本地存储器中，导入运动文件到机器人缓存中
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   filename: 点坐标文件名
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明 :
+
+
+
+** int mrgRobotMotionFileImportExternal(ViSession vi, int name, char* filename);
+
+   从外部存储器中，导入运动文件到机器人缓存中
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   filename: 点坐标文件名
+
+   返回值：0表示执行成功，否则表示失败
+
+   说明 :
+
+
+
+** int mrgRobotFileResolve(ViSession vi, int name, int section, int line, int wavetable, int timeout_ms);
+
+   解算当前运动文件内容到模块中
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   section:文件中的哪个段，这是个必须的参数. 从零开始计数.
+
+   line：一个段中的哪一行（只针对MFC的文件），line从1开始计数。对于非MFC的文件，不关心line值。line的值为零时,表示本次要解析整个段的数据.
+
+   wavetable : 波表索引。如果不想明确指定波表，可设置 为-1.
+
+   timeout_ms:等等解算完成的超时时间。若timeout_ms＝－1，表示不等待解算完成。timeout_ms ＝ 0，表示无限等待。
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+
+
+** int mrgRobotMotionFileExport(ViSession vi, int name, int location, char* filename);
+
+   将系统中的运动数据，导出成文件
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   location:0表示导出到本地存储（本地文件系统）；1表示导出到外部存储（U盘之类）
+
+   filename：表示导出的文件名
+
+   返回值：0表示执行正确，否则表示失败。
+
+
+
+** int mrgRobotToolSet(ViSession vi, int robotname, int type, char* dev);
+
+   设置末端执行器类型及相应的设备
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   type: 末端执行器类型 0->爪子
+
+   dev : 末端执行器对应的通道设备 (1@513), 哪个设备的哪个轴
+
+   返回值：0表示执行成功，－1：表示出错
+
+
+
+** int mrgRobotWaitToolExeEnd(ViSession vi, int name, int timeout_ms);
+
+   等待末端执行器执行完成
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   timeout_ms : 末端执行器执行的超时时间，0表示无限等待
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示执行超时
+
+
+
+** int mrgRobotToolExe(ViSession vi, int name, float position, float time, int timeout_ms);
+
+   执行末端执行器
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   position: 末端执行器电机转动的角度
+
+   time : 末端执行器电机转动的角度所用时间
+
+   timeout_ms : 末端执行器执行的超时时间, 0表示无限等待; -1表示不等待
+
+   返回值：0表示执行成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示执行超时
+
+
+
+** int mrgRobotToolStop(ViSession vi, int name);
+
+   停止末端执行器
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，否则表示失败
+
+
+
+** int mrgRobotToolStopGoHome(ViSession vi, int name);
+
+   中止末端执行器回初始位
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功，否则表示失败
+
+
+
+** int mrgRobotToolGoHome(ViSession vi, int name, int timeout_ms);
+
+   末端执行器回初始位
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   timeout_ms: 等待的超时时间, 0表示无限等待; -1表示不等待
+
+   返回值：0表示执行成功，否则表示失败
+
+
+
+** int mrgGetRobotToolPosition(ViSession vi, int name, float *position);
+
+   获取机器人末端执行器的位置
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   position:末端执行器的位置(相对于机械零点),单位:角度.
+
+   返回值：0表示执行正确, 否则执行失败
+
+
+
+** int mrgRobotGetToolType(ViSession vi, int robotname, int * type);
+
+   查询末端执行器类型
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   type: 末端执行器类型 0->爪子
+
+   dev : 末端执行器对应的通道设备 (1@513), 哪个设备的哪个轴
+
+   返回值：0表示执行成功，－1：表示出错
+
+
+
+** int mrgRobotToolExeMode(ViSession vi, int name, int mode); 
+
+   末端执行器执行模式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   mode: 末端执行器执行模式. 0:正常模式; 1:先张开,再闭合到目标位置
+
+   返回值：0表示执行成功，－1：表示出错，
+
+
+
+
+
+ 
+
+ 
+
+ /*
+
+** int mrgRobotToolExeMode_Query(ViSession vi, int name, int* mode);
+
+   查询末端执行器执行模式
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   mode: 末端执行器执行模式. 0:正常模式; 1:先张开,再闭合到目标位置
+
+   返回值：0表示执行成功，－1：表示出错
+
+
+
+** int mrgGetRobotCurrentAngle(ViSession vi, int name, float *angles);
+
+   获取机器人当前各关节的角度值
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：大于零 表示返回角度值的个数，小于等于零表示出错
+
+   注： angles是不安全的，外部一定要保证angles的空间足够
+
+
+
+** int mrgGetRobotCurrentPosition(ViSession vi, int name, float *x, float *y, float* z);
+
+   获取机器人末端的位置坐标
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgRobotJointHome(ViSession vi, int name, int axi, float speed, int timeout_ms);
+
+   机器人某一个轴回零
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   axi :轴索引
+
+   speed: 回零速度,单位:度/秒
+
+   timeout_ms:表示等待回零结束的超时时间. 如果为-1,表示不等待. 0表示无限等待. >0 表示等待的超时时间. 单位:ms
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgRobotJointMove(ViSession vi, int name, int axi, float position, float time, int timeout_ms);
+
+   控制机器人某一个轴运动
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   axi :轴索引
+
+   position: 轴运行的距离,单位: 度
+
+   time : 轴运动时所需要的时间. 单位:秒
+
+   timeout_ms:表示等待回零结束的超时时间. 如果为-1,表示不等待. 0表示无限等待. >0 表示等待的超时时间. 单位:ms
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgRobotJointMoveOn(ViSession vi, int name, int axi, float speed);
+
+   控制机器人某一个轴持续运动
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   axi :轴索引
+
+   speed: 轴运行的速度,单位: 度/秒
+
+   wavetable : 波表
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+   
+
+** int mrgGetRobotJointAngle(ViSession vi, int name, int joint, float *angle);
+
+   获取机器人各关节的当前角度
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   joint:指定机器人的关节索引. 0表示第一个关节(对T4来说,0指的是基座, 对H2来说,0指的是左边的关节). 如果为-1,则表示获取所有的关节
+
+   返回值：大于零,表示返回的关节角度个数, 否则,出错
+
+   说明: angle 是不安全的,请确保外部分配足够的空间给angle
+
+
+
+** int mrgGetRobotCurrentMileage(ViSession vi, int name, float *x, float *y, float* z);
+
+   机器人当前的里程数，单位 ：米
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   x,y,z ：各坐标轴方向上的里程
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgGetRobotTargetPosition(ViSession vi, int name, float *x, float *y, float* z);
+
+   获取机器人的目标位置
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   x,y,z ：各坐标轴方向上的点
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+
+
+** int mrgGetRobotCurrentRecord(ViSession vi, int name, int *record);
+
+   获取机器人的当前执行的指令索引
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   x,y,z ：各坐标轴方向上的点
+
+   返回值：0表示执行成功， －1：表示执行失败
+
+   此命令只对H2有效！！！！！
+
+
+
+** int mrgGetRobotWristPose(ViSession vi, int name, float *angle);
+
+   获取机器人腕关节的姿态角度(相对于90度的算法零位)
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   angle: 腕关节角度(垂直向下时为零)
+
+   返回值：零表示执行正确,-1表示执行错误
+
+
+
+** int mrgSetRobotWristPose(ViSession vi, int name, float angle,float time,int timeout_ms);
+
+   控制机器人腕关节的姿态角度(相对于90度的算法零位)
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   wavetable: 波表
+
+   angle: 腕关节角度(垂直向下时为零)
+
+   speed: 速度
+
+   timeout_ms: 表示等待执行的超时时间. 如果为-1,表示不等待. 0表示无限等待. >0 表示等待的超时时间. 单位:ms
+
+   返回值：零表示执行正确,-1表示执行错误
+
+
+
+** int mrgSetRobotFold(ViSession vi, int name, float axi0, float axi1, float axi2, float axi3, int timeout);
+
+   机器人的折叠功能(包装位)
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   axi0 axi1,axi2,axi3：各轴相对于零点的角度值. axi0:基座; axi1:大臂;axi2:小臂;axi3:腕
+
+   timeout:正数表示等待超时时间, -1表示不等待,0表示无限等待
+
+   返回值：0表示执行成功， -1：表示执行失败
+
+   此命令只对T4有效!
+
+
+
+** int mrgGetRobotFoldState(ViSession vi, int name);
+
+   获取机器人的折叠状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   返回值：1表示执行成功， 0：还要折叠中; 小于零表示执行出错
+
+   此命令只对T4有效！
+
+
+
+
+
+* mrqdevice.h
+
+** enum RUN_STATE
+
+   |------------+-----------|
+
+   | RS_IDLE    | "IDLE"    |
+
+   | RS_LOADING | "LOADING" |
+
+   | RS_READY   | "READY"   |
+
+   | RS_RUNNING | "RUNNING" |
+
+   | RS_STOP    | "STOP"    |
+
+   | RS_ERROR   | "ERROR"   |
+
+   | RS_RESERVE |           |
+
+   |------------+-----------|
+
+
+
+** enum MT_STATE
+
+  |-----------------+---|
+
+  | MTSTATE_POWERON | 0 |
+
+  | MTSTATE_RESET   | 1 |
+
+  | MTSTATE_CALCING | 2 |
+
+  | MTSTATE_CALCEND | 3 |
+
+  | MTSTATE_STANDBY | 4 |
+
+  | MTSTATE_RUNNING | 5 |
+
+  | MTSTATE_ERROR   | 6 |
+
+  | MTSTATE_RESERVE | 7 |
+
+  |-----------------+---|
+
+
+
+** enum MT_SWITCH
+
+   |--------------------+---|
+
+   | MTSWITCH_RESET     | 0 |
+
+   | MTSWITCH_STOP      | 1 |
+
+   | MTSWITCH_RUN       | 2 |
+
+   | MTSWITCH_PREPARE   | 3 |
+
+   | MTSWITCH_EMERGSTOP | 4 |
+
+   |--------------------+---|
+
+
+
+** int mrgMRQIdentify(ViSession vi, int name, int state);
+
+   MRQ模块识别
+
+   vi :visa设备句柄
+
+   name：机器人
+
+   state：识别状态
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetMRQDioState(ViSession vi, int name, unsigned short *state);
+
+   查询设备模块的IO 状态
+
+   vi :visa设备句柄
+
+   name :设备名称
+
+   state : DIO state
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetMRQGroup(ViSession vi, char *devList, unsigned int *groupID, int grouptype);
+
+   将指定的设备分在一个组中
+
+   vi :visa设备句柄
+
+   devList :设备名称 "512,513,514"
+
+   groupID : 组ID,由下层返回.
+
+   grouptype: 0:GOUPID1, 1:GROUPID2
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionStateReport(ViSession vi, int name, int ch, int state);
+
+   设置运行状态是否自动上报给微控器
+
+   vi :visa设备句柄
+
+   name：机器人
+
+   ch：通道号
+
+   state：状态
+
+   返回值：0表示执行成功，－1表示失败
+
+      
+
+** int mrgMRQMotionStateReport_Query(ViSession vi, int name, int ch,int *state);
+
+   查询上报状态
+
+   vi :visa设备句柄
+
+   name：机器人
+
+   ch：通道号
+
+   state:  0 ACTIVE 1 QUERY；
+
+   返回值：0表示执行成功，－1表示失败
+
+   
+
+** int mrgMRQMotionRun(ViSession vi, int name, int ch, int wavetable);
+
+   运行指定的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引值，取值范围0~9
+
+   返回值：0表示执行成功，－1表示失败
+
+   
+
+** int mrgMRQMotionRunState_Query(ViSession vi, int name, int ch, int wavetable, int*robotstate);
+
+   查询运行状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引值，取值范围0~9
+
+   robotstate:机器人的状态 0:IDLE; 1:LOADING;2:READY;3:RUNNING;4:STOP; 5:ERROR;
+
+   返回值：0表示执行成功，－1表示失败
+
+   
+
+** int mrgMRQMotionWaitReady(ViSession vi, int name, int ch, int wavetable, int timeout_ms);
+
+   等待当前设备指定通道的特定波表的ready状态（等待模块设备解算完成）
+
+   vi :visa设备句柄
+
+   name: 设备名称
+
+   ch : 通道索引
+
+   wavetable ：波表索引。不允许为空
+
+   timeout_ms：等待超时时间。0表示无限等待。不允许小于零
+
+   返回值：0表示等待成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   
+
+** int mrgMRQMotionWaitEnd(ViSession vi, int name, int ch, int wavetable, int timeout_ms);
+
+   等待当前设备指定通道的特定波表的运行结束状态
+
+   vi :visa设备句柄
+
+   name: 设备名称
+
+   ch : 通道索引
+
+   wavetable ：波表索引。不允许为空
+
+   timeout_ms：等待超时时间。0表示无限等待。不允许小于零
+
+   返回值：0表示等待成功，－1：表示等待过程中出错，－2：表示运行状态出错；－3：表示等待超时
+
+   
+
+** int mrgMRQMotionStop(ViSession vi, int name, int ch, int wavetable);
+
+   停止指定的波表
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引值，取值范围0~9
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionTrigSource(ViSession vi, int name, int ch, int source);
+
+   设置启动运行的触发源
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   source:触发源
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionTrigSource_Query(ViSession vi, int name, int ch, int *source);
+
+   查询启动运行触发源
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   source:触发源 0:SOFTWARE 1:DIGITALIO 2:CAN 3:ALL
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionOffsetState(ViSession vi, int name, int ch, int state);
+
+   设置电机未运动时发生位移是否上报给微控器
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   state:状态
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionOffsetState_Query(ViSession vi, int name, int ch, int *state);
+
+   查询电机未运动时发生位移是否上报给微控器状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   state:状态  0:OFF ; 1: ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionOffsetValue_Query(ViSession vi, int name, int ch, float *distance);
+
+   查询电机未运动时发生的位移
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   displace:位移
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionABCount_Query(ViSession vi, int name, int ch);
+
+   查询增量编码器的AB相的计数值
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   返回值：AB相的计数值
+
+
+
+** int mrgMRQMotionABCountClear(ViSession vi, int name, int ch);
+
+   清空增量编码器的AB相的计数值
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionReverse(ViSession vi, int name, int state);
+
+   设置电机是否反向
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   state：是否反向
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotionReverse_Query(ViSession vi, int name,int *reverse);
+
+   查询电机反向开关状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   reverse: 0表示没有反向；1表示反向；
+
+   返回值：0表示执行成功；－1表示失败
+
+
+
+** int mrgMRQAdjust(ViSession vi, int name, int ch, int wavetable,float position, float time, int timeout_ms);
+
+   微调
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   position:位置
+
+   time : 移动到目标位置期望使用的时间
+
+   timeout_ms:等待超时时间。-1表示不等待运行结束；0表示无限等待
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQClockSync(ViSession vi, char *name_list, float time);
+
+   时钟同步
+
+   vi :visa设备句柄
+
+   name_list:设备名列表
+
+   time:同步的时间
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorStepAngle(ViSession vi, int name, int ch, int stepangle);
+
+   设置电机的步距角
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   stepangle:电机的步距角,0->1.8度，1->0.9度，2->15度 3->7.5度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorStepAngle_Query(ViSession vi, int name, int ch, int *stepangle);
+
+   查询电机的步距角
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   stepangle:电机的步距角,0->1.8度，1->0.9度，2->15度 3->7.5度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorMotionType(ViSession vi, int name, int ch, int type);
+
+   设置电机的运动类型
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch ：通道号
+
+   type:运动类型 0->旋转运动  1->直线运动
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorMotionType_Query(ViSession vi, int name, int ch, int *type);
+
+   查询电机的运动类型
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   type:运动类型  0->旋转运动  1->直线运动
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorPositionUnit(ViSession vi, int name, int ch, int unit);
+
+   设置电机运动时的单位
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   unit:电机运动时的单位;0:ANGLE 1:RADIAN 2:MILLIMETER
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorPositionUnit_Query(ViSession vi, int name, int ch, int *unit);
+
+   查询电机运动时的单位
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   unit:电机运动时的单位;0:ANGLE 1:RADIAN 2:MILLIMETER
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorGearRatio(ViSession vi, int name, int ch, int a, int b);
+
+   设置电机旋转运动时的速比
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   a:分子
+
+   b:分母
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorGearRatio_Query(ViSession vi, int name, int ch, int *a, int *b);
+
+   查询电机旋转运动时的速比
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   a:分子
+
+   b:分母
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorLead(ViSession vi, int name, int ch, float millimeter);
+
+   设置电机直线运动时的导程
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   millimeter:电机直线运动时的导程
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorLead_Query(ViSession vi, int name, int ch, float *millimeter);
+
+   查询电机直线运动时的导程
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   millimeter:电机直线运动时的导程
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorSize(ViSession vi, int name, int ch, int size);
+
+   设置电机的尺寸
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   size:电机的尺寸
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorSize_Query(ViSession vi, int name, int ch, int *size);
+
+   查询电机的尺寸
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   size:电机的尺寸
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorVoltate(ViSession vi, int name, int ch, int volt);
+
+   设置电机的额定电压
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   volt:电压值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorVoltage_Query(ViSession vi, int name, int ch, int *volt);
+
+   查询电机的额定电压
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   volt:电压值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorCurrent(ViSession vi, int name, int ch, float current);
+
+   设置电机的额定电流
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   current:额定电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorCurrent_Query(ViSession vi, int name, int ch, float *current);
+
+   查询电机的额定电流
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   current:额定电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorBackLash(ViSession vi, int name, int ch, float lash);
+
+   设置电机的反向间隙
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   lash:电机的反向间隙
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQMotorBackLash_Query(ViSession vi, int name, int ch, float *lash);
+
+   查询电机的反向间隙
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   lash:电机的反向间隙
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTConfig(ViSession vi, int name, int ch, int wavetable, int state);
+
+   PVT配置命令
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:PVT 的配置状态：0: END ;1: CLEAR
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTValue(ViSession vi, int name, int ch, int wavetable, float p, float v, float t);
+
+   下发PVT
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   p:PVT 点的位置
+
+   v:PVT 点的速度
+
+   t:PVT 点的时间值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTLoad(ViSession vi, int name, int ch, int wavetable, float * p, float * v, float *t, int step, int line);
+
+   PVT下载
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:  
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTRun(ViSession vi, int name, int ch, int wavetable, int timeout_ms);
+
+   运行PVT
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   timeout_ms:等待运行结束的超时时间,-1表示不等待. 0表示无限等待.
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTState(ViSession vi, int name, int ch, int wavetable, int state);
+
+   设置当前PVT的状态
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state1:PVT的状态  0:RESET ,1:STOP ,2:RUN ,3:PREPARE,4:EMERGSTOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTState_Query(ViSession vi, int name, int ch, int wavetable, int *state1);
+
+   查询当前PVT下发的状态
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state1:PVT下发的状态   0:IDLE; 1:LOADING;2:READY;3:RUNNING;4:STOP; 5:ERROR;
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStateWait(ViSession vi, int name, int ch, int wavetable, int state, int timeout_ms);
+
+   等待当前PVT的状态
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:期望等待的状态   0:POWERON; 1:IDLE;2:CALCING;3:CALCEND; 4:STANDBY,5:RUNNING,6:ERROR;
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStateWaitEnd(ViSession vi, int name, int ch, int wavetable,int timeout_ms);
+
+   等待当前PVT的解算结束状态或运行结束状态
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTTimeScale(ViSession vi, int name, int ch, int wavetable, int speedup, int speedcut);
+
+   设置S曲线的加减速占比，两段一起，千分之
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   speedup:加速段占比
+
+   speedcut:减速段占比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTTimeScale_Query(ViSession vi, int name, int ch, int wavetable, int* speedup, int* speedcut);
+
+   查询S曲线的加减速占比，两段一起，千分之
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   speedup:加速段占比
+
+   speedcut:减速段占比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTCycle(ViSession vi, int name, int ch, int wavetable, unsigned int cycle);
+
+   设置循环模式下，PVT的循环次数
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   cycle:循环次数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTCycle_Query(ViSession vi, int name, int ch, int wavetable, unsigned int *cycle);
+
+   查询循环模式下，PVT的循环次数
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   cycle:循环次数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTFifoBufferTime(ViSession vi, int name, int ch, int wavetable, unsigned int time);
+
+   设置FIFO模式下，PVT的缓冲时间
+
+   vi :visa设备句柄
+
+   name: 设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   time:缓冲时间，单位：ms
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTFifoBufferTime_Query(ViSession vi, int name, int ch, int wavetable, unsigned int *time);
+
+   查询FIFO模式下，PVT的缓冲时间
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   time:缓冲时间，单位：ms
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeConfig_Query(ViSession vi, int name, int ch, int wavetable, int *exe, int *plan, int *motion);
+
+   查询模式,包括执行模式,规划模式,运动模式
+
+   vi :visa设备句柄
+
+   name: 设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   exe:执行模式：0: CYCLE; 1: FIFO
+
+   plan:轨迹规划方式：0: CUBICPOLY; 1:TRAPEZOID; 2:SCURVE
+
+   motion:运动模式： 0: PVT; 1: LVT_CORRECT ; 2: LVT_NOCORRECT
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeConfig(ViSession vi, int name, int ch, int wavetable, int exe, int plan, int motion);
+
+   设置模式,包括执行模式,规划模式,运动模式
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   exe:执行模式：0: CYCLE; 1: FIFO
+
+   plan:轨迹规划方式：0: CUBICPOLY; 1:TRAPEZOID; 2:SCURVE
+
+   motion:运动模式： 0: PVT; 1: LVT_CORRECT ; 2: LVT_NOCORRECT
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeExe(ViSession vi, int name, int ch, int wavetable, int mode);
+
+   设置执行模式,循环或者FIFO
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   mode:执行模式  0－循环模式； 1：FIFO模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeExe_Query(ViSession vi, int name, int ch, int wavetable, int *mode);
+
+   查询执行模式,循环或者FIFO
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   mode:执行模式; 0:循环模式；1：FIFO模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModePlan(ViSession vi, int name, int ch, int wavetable, int mode);
+
+   设置规划模式:三次插值,线性插值,梯形插值,或五次插值
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   mode:规划模式  0 - 2  CUBICPOLY|TRAPEZOID｜SCURVE
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModePlan_Query(ViSession vi, int name, int ch, int wavetable, int *mode);
+
+   查询规划模式:三次插值,线性插值,梯形插值,或五次插值
+
+   vi :visa设备句柄
+
+   name: 机器人名称
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   mode:规划模式 0 - 2  CUBICPOLY|TRAPEZOID｜SCURVE
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeMotion(ViSession vi, int name, int ch, int wavetable, int pattern);
+
+   设置运动模式:PVT或者LVT
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   pattern:模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModeMotion_Query(ViSession vi, int name, int ch, int wavetable, int *pattern);
+
+   查询运动模式:PVT或者LVT
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   pattern:模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModifyDuty(ViSession vi, int name, int ch, int wavetable, int duty);
+
+   设置LVT模式下进行时间调整的占比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   duty:占空比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTModifyDuty_Query(ViSession vi, int name, int ch, int wavetable, int *duty);
+
+   查询LVT模式下进行时间调整的占比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   duty:占空比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTEndState(ViSession vi, int name, int ch, int wavetable, int pattern);
+
+   设置是否为速度保持
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   pattern:模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTEndState_Query(ViSession vi, int name, int ch, int wavetable, int *pattern);
+
+   查询是否为速度保持
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   pattern:模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopMode(ViSession vi, int name, int ch, int wavetable, int type);
+
+   设置急停方式,立即停止或者减速停止
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   type:急停方式;  0:立即停止；1：减速停止
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopMode_Query(ViSession vi, int name, int ch, int wavetable, int *mode);
+
+   查询急停方式,立即停止或者减速停止
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   mode:急停方式,0:立即停止； 1：减速停止
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopTime(ViSession vi, int name, int ch, int wavetable, float time);
+
+   设置急停时间
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   time:急停的时间
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopTime_Query(ViSession vi, int name, int ch, int wavetable, float *time);
+
+   查询急停时间
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   time:急停的时间
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopDistance(ViSession vi, int name, int ch, int wavetable, float distance);
+
+   设置减速停止时的减速距离
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   distance:减速距离
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTStopDistance_Query(ViSession vi, int name, int ch, int  wavetable, float *distance);
+
+   查询减速停止时的减速距离
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   distance:减速距离
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTWavetableAddress(ViSession vi, int name, int ch, int wavetable, unsigned int address);
+
+   设置波表的起始地址
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   address:波表起始地址
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTWavetableAddress_Query(ViSession vi, int name,int ch, int  wavetable, unsigned int *address);
+
+   查询波表的起始地址
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   address:波表起始地址
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTWavetableSize(ViSession vi, int name, int ch, int wavetable, unsigned int size);
+
+   设置波表的大小
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   size:波表大小
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQPVTWavetableSize_Query(ViSession vi, int name,int ch, int  wavetable, unsigned int *size);
+
+   查询波表的大小
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   size:波表大小
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepLineConfig_Query(ViSession vi, int name, int ch, int wavetable, int *state,float *threshold, int *resp);
+
+   查询失步的状态,阈值及失步后的反应
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state1:失步的状态
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepLineConfig(ViSession vi, int name, int ch, int wavetable, int state, float threshold, int resp);
+
+   设置失步的状态,阈值及失步后的反应
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:失步的告警状态 0:禁止 ；1：使能
+
+   threshold:失步的阈值
+
+   resp:编码器步数偏差超过阈值后的响应方式  0:NONE;1:ALARM;2:STOP;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepState(ViSession vi, int name, int ch, int wavetable, int state);
+
+   设置线间失步告警状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:警告状态
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepState_Query(ViSession vi, int name, int ch, int wavetable, int *state);
+
+   查询线间失步告警状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   state:警告状态  0:禁止 ；1：使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepThreshold(ViSession vi, int name, int ch, int wavetable, float value);
+
+   设置线间失步阈值
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   value:线间失步阈值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepThreshold_Query(ViSession vi, int name, int ch, int wavetable, float *value);
+
+   查询线间失步阈值
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   value:线间失步阈值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepResponse(ViSession vi, int name, int ch, int wavetable, int resp );
+
+   设置当步数偏差超过LOSTNUM后的响应方式
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   resp: 0:NONE;1:ALARM;2:STOP;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQLostStepResponse_Query(ViSession vi, int name, int ch, int wavetable, int *resp);
+
+   查询当步数偏差超过LOSTNUM后的响应方式
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   wavetable:波表索引，取值范围： 0~9 MAIN|SMALL|P1|P2|P3|P4|P5|P6|P7|P8
+
+   resp : 0:NONE;1:ALARM;2:STOP;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportConfig_Query(ViSession vi, int name, int ch, int funs, int *state, float *period);
+
+   查询上报功能配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs: 0 ~ 5 TORQUE|CYCLE|SGALL|SGSE|DIST|ABSEN
+
+   state:上报功能是否打开 0->off, 1->ON
+
+   period:指定类型数据的上报周期,单位：ms
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportConfig(ViSession vi, int name, int ch, int funs, int state, float period);
+
+   设置上报功能配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs:功能
+
+   state:状态onoff
+
+   period:指定类型数据的上报周期
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportState(ViSession vi, int name, int ch, int funs, int state);
+
+   设置上报状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs:功能
+
+   state:状态onoff
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportState_Query(ViSession vi, int name, int ch, int funs, int *state);
+
+   查询上报状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs:功能
+
+   state1状态onoff
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportPeriod(ViSession vi, int name, int ch, int funs, int period);
+
+   设置上报周期
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs:功能
+
+   period:指定类型数据的上报周期,单位：ms
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportPeriod_Query(ViSession vi, int name, int ch, int funs, int *period);
+
+   查询上报周期
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   funs:功能
+
+   period:指定类型数据的上报周期,单位：ms
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQReportData_Query(ViSession vi, int name, int ch, int index, unsigned int *data);
+
+   查询自动上报数据
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   index:上报数据类型： TORQUE（能效曲线的百分比）、 CYCLE（循环模式下的循环次数）、 SGALL、SGSE 或 DIST（测距传感器的值）
+
+   返回值：返回读取到的数据个数
+
+
+
+** int mrgMRQReportQueue_Query(ViSession vi, int name, int ch, int func, unsigned int *data);
+
+   查询自动上报数据队列中的数据
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   func: 0 ~ 5 TORQUE|CYCLE|SGALL|SGSE|DIST|ABSEN
+
+   data : 返回数据的存储区
+
+   返回值：实际返回的数据个数
+
+
+
+** int mrgMRQTriggerMode(ViSession vi, int name, int ch, int mode);
+
+   设置触发输入的模式,码型触发或电平触发
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   mode:触发输入的模式
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerMode_Query(ViSession vi, int name, int ch, int *mode);
+
+   查询触发输入的模式,码型触发或电平触发
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   mode:触发输入的模式. 0:码型触发；1：电平触发
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelConfig_Query(ViSession vi, int name, int ch, int trig, int *state, int *type, float *period, int *response);
+
+   查询电平触发配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   state:开关状态
+
+   type:触发类型，0：无类型；1：上升沿；2；低电平；3：下降沿；4：高电平
+
+   period:采样周期，单位：s
+
+   response:触动触发后的反应 0：NONE，1：ALARM;2:STOP ;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelConfig(ViSession vi, int name, int ch, int trig, int state, int type, float period, int response);
+
+   设置电平触发配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   state:开关状态
+
+   type:触发类型，0：无类型；1：上升沿；2；低电平；3：下降沿；4：高电平
+
+   period:采样周期，单位：s
+
+   response:触动触发后的反应 0：NONE，1：ALARM;2:STOP ;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelState(ViSession vi, int name, int ch, int trig, int state);
+
+   设置电平触发，打开或关闭
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   state:状态  0表示禁止；1表示使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelState_Query(ViSession vi, int name, int ch, int trig, int *state);
+
+   查询电平触发，打开或关闭
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   state:状态. 0表示禁止；1表示使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelType(ViSession vi, int name, int ch, int trig, int type);
+
+   设置触发电平类型
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   type:电平触发类型： RESERVE|LOW|RISE|FALL|HIGH
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelType_Query(ViSession vi, int name, int ch, int trig, int *type);
+
+   查询触发电平类型
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   type:电平触发类型： 0:RESERVE; 1:LOW; 2: RISE; 3:FALL;4:HIGH
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelResponse(ViSession vi, int name, int ch, int trig, int resp);
+
+   设置触发电平响应
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   resp:电平触发的响应方式： NONE|ALARM|STOP|ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelResponse_Query(ViSession vi, int name, int ch, int trig,int *resp);
+
+   查询触发电平响应
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   resp:电平触发的响应方式：0: NONE; 1:ALARM;2:STOP; 3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelPeriod(ViSession vi, int name, int ch, int trig, float period);
+
+   设置触发电平采样周期
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   period:采样周期,单位：s
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQTriggerLevelPeriod_Query(ViSession vi, int name, int ch, int trig, float *period);
+
+   查询触发电平采样周期
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   trig:电平触发编号： TRIGL 或 TRIGR
+
+   period:采样周期,单位：s
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverConfig_Query(ViSession vi, int name, int ch, int *state, int *microstep, float*current);
+
+   查询驱动板配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:开关状态。 0：禁止；1：使能
+
+   microstep:微步 256,128,64,32,16,8,4,2,1
+
+   current:驱动器的驱动电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverConfig(ViSession vi, int name, int ch, int state, int microstep, float current);
+
+   设置驱动板配置
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:开关状态。 0：禁止；1：使能
+
+   microstep:微步
+
+   current:驱动器的驱动电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverType_Query(ViSession vi, int name, int ch, int *type);
+
+   查询驱动板类型
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   type:驱动板的类型 0:D17  1：D23
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverCurrent(ViSession vi, int name, int ch, float current);
+
+   设置驱动板电流
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   current:驱动板电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverCurrent_Query(ViSession vi, int name, int ch, float *current);
+
+   查询驱动板电流
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   current:驱动板电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverIdleCurrent(ViSession vi, int name, int ch, float current);
+
+   设置驱动板空闲电流
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   current:驱动板空闲电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverIdleCurrent_Query(ViSession vi, int name, int ch, float *current);
+
+   查询驱动板空闲电流
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   current:驱动板空闲电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverMicroStep(ViSession vi, int name, int ch, int microstep);
+
+   设置电机微步数
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   microstep:电机的微步数 256,128,64,32,16,8,4,2,1
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverMicroStep_Query(ViSession vi, int name, int ch, int *microstep);
+
+   查询电机微步数
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   microstep:电机的微步数 256,128,64,32,16,8,4,2,1
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverState(ViSession vi, int name, int ch, int state);
+
+   设置驱动开关状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态onoff  0:OFF; 1:ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverState_Query(ViSession vi, int name, int ch, int *state);
+
+   查询驱动开关状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state1:状态onoff
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverRegisterValue(ViSession vi, int name, int ch, int regIndex, unsigned int value);
+
+   设置驱动的寄存器值
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   regIndex： 寄存器地址
+
+   value:寄存器值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverRegisterValue_Query(ViSession vi, int name, int ch, int regIndex, unsigned int *value);
+
+   查询驱动的寄存器值
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   regIndex： 寄存器地址
+
+   value:寄存器值
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningState(ViSession vi, int name, int ch, int state);
+
+   设置驱动器TUNING功能的开关状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:开关状态 0：OFF；1：ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningState_Query(ViSession vi, int name, int ch, int *state);
+
+   查询驱动器TUNING功能的开关状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:开关状态 0：OFF；1：ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningMinCurrent(ViSession vi, int name, int ch, int ratio);
+
+   设置驱动器TUNING功能的最小电流比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   ratio:最小电流比 0：12；1：14
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningMinCurrent_Query(ViSession vi, int name, int ch, int *ratio);
+
+   查询驱动器TUNING功能的最小电流比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   ratio:最小电流比 0：12；1：14
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningCurrentRegulate(ViSession vi, int name, int ch, int speedUp, int speedDown);
+
+   设置驱动器TUNING功能的电流上升和下降速度
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   speedUp:电流上升速度 0：表示每整步增加一个单位的电流；
+
+   ：表示每整步增加两个单位的电流
+
+   ：表示每整步增加4个单位的电流
+
+   ：表示每整步增加8个单位的电流
+
+   speedDown：电流下降速度  0：表示每32整步减小一个单位的电流；
+
+   ：表示每8整步减小一个单位的电流；
+
+   ：表示每2整步减小一个单位的电流；
+
+   ：表示每1整步减小一个单位的电流；
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDriverTuningCurrentRegulate_Query(ViSession vi, int name, int ch, int *speedUp, int *speedDown);
+
+   查询驱动器TUNING功能的电流上升和下降速度
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   speedUp:电流上升速度 0：表示每整步增加一个单位的电流；
+
+   ：表示每整步增加两个单位的电流
+
+   ：表示每整步增加4个单位的电流
+
+   ：表示每整步增加8个单位的电流
+
+   speedDown：电流下降速度  0：表示每32整步减小一个单位的电流；
+
+   ：表示每8整步减小一个单位的电流；
+
+   ：表示每2整步减小一个单位的电流；
+
+   ：表示每1整步减小一个单位的电流；
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderConfig_Query(ViSession vi, int name, int ch,int *state, int *type, int *lineNum, int *chanNum);
+
+   查询编码器的状态,类型,线数及通道个数.状态为OFF时,后面的参数可以省略
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态  0:OFF;  1：ON
+
+   type:编码器的类型： 0:INCREMENTAL 或 1: ABSOLUTE
+
+   linenum:增量型编码器光电码盘一周的线数： 500、 1000、 1024、 2000、 2048、 4000、 4096 或 5000
+
+   channelnum:增量型编码器的通道数： 1 或 3
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderConfig(ViSession vi, int name, int ch,int state, int type, int linenum, int channelnum);
+
+   设置编码器的状态,类型,线数及通道个数.状态为OFF时,后面的参数可以省略
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态  0:OFF;  1：ON
+
+   type:编码器的类型： 0:INCREMENTAL 或 1: ABSOLUTE
+
+   linenum:增量型编码器光电码盘一周的线数： 500、 1000、 1024、 2000、 2048、 4000、 4096 或 5000
+
+   channelnum:增量型编码器的通道数： 1 或 3
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderLineNum(ViSession vi, int name, int ch, int num);
+
+   设置编码器线数
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   num:编码器线数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderLineNum_Query(ViSession vi, int name, int ch, int *num);
+
+   查询编码器线数
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   num:编码器线数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderChannelNum(ViSession vi, int name, int ch, int channelnum);
+
+   设置编码器通道
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   channelnum:增量型编码器的通道数： 1 或 3
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderChannelNum_Query(ViSession vi, int name, int ch, int *channelnum);
+
+   查询编码器通道
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   channelnum:增量型编码器的通道数： 1 或 3
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderType(ViSession vi, int name, int ch, int type);
+
+   设置编码器类型
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   type:编码器的类型： INCREMENTAL 或 ABSOLUTE
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderType_Query(ViSession vi, int name, int ch, int *type);
+
+   查询编码器类型
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   type:编码器的类型： 0:INCREMENTAL 或 1:ABSOLUTE
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderMultiple(ViSession vi, int name, int ch, int multiple);
+
+   设置编码器信号的倍乘
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   multiple:倍乘
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderMultiple_Query(ViSession vi, int name, int ch, int *multiple);
+
+   查询编码器信号的倍乘
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   multiple:倍乘 0 - 2 "SINGLE","DOUBLE","QUADRUPLE"
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderState(ViSession vi, int name, int ch, int state);
+
+   设置编码器状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:编码器的状态：0: NONE;1: OFF ; 2:ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderState_Query(ViSession vi, int name, int ch, int*state);
+
+   查询编码器状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state1:编码器的状态： 0:NONE; 1:OFF ;2: ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderFeedback(ViSession vi, int name, int ch, int value);
+
+   设置LVT模式下编码器反馈比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   feed:编码器反馈比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderFeedback_Query(ViSession vi, int name, int ch, int *value);
+
+   查询LVT模式下编码器反馈比
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   feed:编码器反馈比
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderDirection(ViSession vi, int name, int ch, int value);
+
+   设置编码器方向
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器方向。0表示编码器逆时针转动，数值增加；1表示编码器逆时针转，数据减小
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQEncoderDirection_Query(ViSession vi, int name, int ch, int *value);
+
+   查询编码器方向
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器方向。0表示编码器逆时针转动，数值增加；1表示编码器逆时针转，数据减小
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmState(ViSession vi, int name, int ch, int state);
+
+   设置绝对值编码器的报警状态
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   state:编码器报警状态 0:OFF; 1:ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmState_Query(ViSession vi, int name, int ch, int *state);
+
+   查询绝对值编码器的报警状态
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   state:编码器报警状态 0:OFF; 1:ON
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmUpLimit(ViSession vi, int name, int ch, int value);
+
+   设置绝对值编码器的报警上限
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器报警上限值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmUpLimit_Query(ViSession vi, int name, int ch, int *value);
+
+   查绝对值编码器的报警上限
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器报警上限值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmDownLimit(ViSession vi, int name, int ch, int value);
+
+   设置绝对值编码器的报警下限
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器报警下限值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmDownLimit_Query(ViSession vi, int name, int ch, int *value);
+
+   查绝对值编码器的报警下限
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器报警下限值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmResponse(ViSession vi, int name, int ch, int value);
+
+   设置绝对值编码器的报警响应类型
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:响应类型 0:NONE;1:ALARM;2:STOP;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderAlarmResponse_Query(ViSession vi, int name, int ch, int *value);
+
+   查绝对值编码器的报警响应类型
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:响应类型 0:NONE;1:ALARM;2:STOP;3:ALARM&STOP
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderZeroValue(ViSession vi, int name, int ch, int value);
+
+   设置绝对值编码器的零位值
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器零位值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQAbsEncoderZeroValue_Query(ViSession vi, int name, int ch, int *value);
+
+   查绝对值编码器的零位值
+
+   vi :visa设备句柄
+
+   name:设备名称(SEND_ID)
+
+   ch：通道号
+
+   value:编码器零位值(编码器线数)
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartConfig(ViSession vi, int num, int name, int baud,char parity, int wordlen, int stopbit);
+
+   设置串口应用配置，配置校验位、数据位、停止位
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   parity:RS232 的校验方式： NONE、 EVEN 或 ODD
+
+   wordlen:RS232 的数据长度： 8 或 9
+
+   stopbit:RS232 数据帧中停止位的位数： 1、 0.5、 2 或 1.5
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartConfig_Query(ViSession vi, int num, int name, int *baud,char *parity,int *wordlen,int *stopbit);
+
+   查询串口应用配置，配置校验位、数据位、停止位
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   buf:信息
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartFlowctrl(ViSession vi, int num, int name, int mode);
+
+   设置串口硬件控制流
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   mode:RS232 的流控制方式： NONE、 RTS、 CTS 或 RTS&CTS
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartFlowctrl_Query(ViSession vi, int num, int name, int *mode);
+
+   查询串口硬件控制流
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   mode:RS232 的流控制方式： NONE、 RTS、 CTS 或 RTS&CTS
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorState(ViSession vi, int num, int num1, int name, int state);
+
+   设置串口传感器状态，打开或关闭
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   state:打开或关闭
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorState_Query(ViSession vi, int num, int num1, int name, int *state);
+
+   查询串口传感器状态，打开或关闭
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   state:打开或关闭  0:关闭； 1：打开
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfAll(ViSession vi, int num, int num1, int name, int sof, int framelen, int num2, int period);
+
+   设置传感器配置，数据帧头、帧长度、周期内接收的帧数、切换周期
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   num:要设置的 UART 的串口号：数字 1 或 2
+
+   num1:传感器所在端口号： 1， 2， 3 或 4
+
+   sof:数据帧头
+
+   framelen:帧长度
+
+   num2:帧数
+
+   period:周期
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfAll_Query(ViSession vi, int num,int num1, int name, int *sof, int* framelen, int* framenum, int* period);
+
+   查询传感器配置，数据帧头、帧长度、周期内接收的帧数、切换周期
+
+   *vi :visa设备句柄
+
+   name: 设备名称（SEND_ID）
+
+   sof:数据帧头
+
+   framelen:帧长度
+
+   num2:帧数
+
+   period:周期
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfSof(ViSession vi, int num, int num1, int name, int sof);
+
+
+
+   设置数据帧头
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   num:要设置的 UART 的串口号：数字 1 或 2
+
+   num1:传感器所在端口号： 1， 2， 3 或 4
+
+   sof:数据帧头
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfSof_Query(ViSession vi, int num, int num1, int name, int *sof);
+
+
+
+   查询数据帧头
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   sof : 数据帧头
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfFrameLen(ViSession vi, int num, int num1, int name, int len);
+
+   设置帧长度
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   len:帧长度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfFrameLen_Query(ViSession vi, int num, int num1, int name, int *len);
+
+   查询帧长度
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   len:帧长度
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfRecvNum(ViSession vi, int num, int num1, int name, int num2);
+
+   设置帧个数
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   num2:帧个数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfRecvNum_Query(ViSession vi, int num, int num1, int name, int *num2);
+
+   查询帧个数
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   num2:帧个数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfPeriod(ViSession vi, int num, int num1, int name, int period);
+
+   设置周期
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   period:周期
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorConfPeriod_Query(ViSession vi, int num, int num1, int name, int *period);
+
+   查询周期
+
+   vi :visa设备句柄
+
+   name :设备名称（SEND_ID）
+
+   num : 要设置的 UART 的串口号：数字 1 或 2
+
+   num1 : 传感器所在端口号： 1， 2， 3 或 4
+
+   period:周期
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQUartSensorData_Query(ViSession vi, int num, int num1, int name, char *buf);
+
+   查询传感器数据
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   buf:数据
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDistanceAlarmState_Query(ViSession vi, int name, int ch, int *state);
+
+   查询测距报警的状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态  0:禁止； 1：使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDistanceAlarmState(ViSession vi, int name, int ch, int state);
+
+   设置测距报警的状态
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state1:状态  0:禁止； 1：使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDistanceAlarm(ViSession vi, int name, int num, int ch, float distance);
+
+   设置测距报警的响应距离
+
+   alarm:ALARm1,ALARm2,ALARm3
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   distance:测距报警的响应距离
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQDistanceAlarm_Query(ViSession vi, int num, int name, int ch, float *distance);
+
+   查询测距报警的响应距离
+
+   vi :visa设备句柄
+
+   alarm:ALARm1,ALARm2,ALARm3
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   distance:测距报警的响应距离
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverType_Query(ViSession vi, int name, int ch, int *type);
+
+   查询驱动板类型（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   type:驱动板类型
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverCurrent(ViSession vi, int name, float current);
+
+   设置驱动板电流（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   current:驱动板电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverCurrent_Query(ViSession vi, int name, float *current);
+
+   查询驱动板电流（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   current:驱动板电流
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverMicrosteps(ViSession vi, int name, int microstep);
+
+   设置电机微步数（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   microstep:电机的微步数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverMicrosteps_Query(ViSession vi, int name, int *microstep);
+
+   查询电机微步数（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   microstep:电机的微步数
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverState_Query(ViSession vi, int name, int ch, int*state);
+
+   查询驱动开关状态（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态  0:禁止；1：使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgMRQNewDriverState(ViSession vi, int name, int ch, int state);
+
+   设置驱动开关状态（只支持10轴）
+
+   vi :visa设备句柄
+
+   name:设备名称（SEND_ID）
+
+   ch：通道号
+
+   state:状态 0:禁止； 1：使能
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+
+
+* system.h
+
+** int mrgSysGetProjectSoftVersion(ViSession vi, char *version);
+
+   查询 MRH-T 软件工程版本号
+
+   vi :visa设备句柄
+
+   返回值：0回读正确;否则回读失败
+
+
+
+** int mrgSysGetSoftVersion(ViSession vi, char * version);
+
+   查询 MRH-T 软件版本号
+
+   vi :visa设备句柄
+
+   返回值：0回读正确;否则回读失败
+
+
+
+** int mrgSysGetBackBoardSoftVersion(ViSession vi,char * version); 
+
+   查询 MRH-T 背板的软件版本号
+
+   vi :visa设备句柄
+
+   返回值：0回读正确;否则回读失败
+
+
+
+** int mrgSysGetBackBoardHardVersion(ViSession vi, char * version); 
+
+   查询 MRH-T 背板的硬件版本号
+
+   vi :visa设备句柄
+
+   返回值：0回读正确;否则回读失败
+
+
+
+** int mrgSysStartCan(ViSession vi);
+
+   启动MARH的CAN口
+
+   vi :visa设备句柄
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSysResetCan(ViSession vi);
+
+   复位MRH的CAN口
+
+   vi :visa设备句柄
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSysConfCan(ViSession vi, int baud);
+
+   配置MRH的CAN口波特率
+
+   vi :visa设备句柄
+
+   baud:波特率 1000000,800000,500000,250000,125000,100000
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSysConfCan_Query(ViSession vi, int* baud);
+
+   获取MRH的CAN口波特率
+
+   vi :visa设备句柄
+
+   baud:波特率 1000000,800000,500000,250000,125000,100000
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSysModeSwitch(ViSession vi, int mode);
+
+   切换 MRH-T 的模式
+
+   vi :visa设备句柄
+
+   mode:MRH-T 的模式，取值范围： [0, 1]
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgGetSysMode(ViSession vi);
+
+   查询 MRH-T 的模式
+
+   vi :visa设备句柄
+
+   返回值：MRH-T 的模式
+
+
+
+** int mrgSysInstructionMode(ViSession vi, int mode);
+
+   设置指令表的模式 按行执行或者按段执行
+
+   vi :visa设备句柄
+
+   mode:指令表执行模式，取值范围： [0, 1]. 0表示按行执行,1表示按段执行
+
+   返回值：0表示执行成功，－1表示失败
+
+
+
+** int mrgSysInstructionMode_Query(ViSession vi, int* mode); 
+
+   查询指令表的模式
+
+   vi :visa设备句柄
+
+   mode:指令表执行模式，取值范围： [0, 1]. 0表示按行执行,1表示按段执行
+
+   返回值：0表示执行成功,否则表示执行失败
+
+
+
+** int mrgSysSetNetworkIPMode(ViSession vi,int mode);
+
+   设置网络的IP模式 
+
+   vi :visa设备句柄
+
+   mode : IP 模式 0->静态IP; 1->DHCP
+
+   返回值：0设置成功,-1设置失败
+
+
+
+** int mrgSysGetNetworkIPMode(ViSession vi, int* mode); 
+
+   获取网络的IP模式
+
+   vi :visa设备句柄
+
+   mode : IP 模式 0->静态IP; 1->DHCP
+
+   返回值：0执行成功,否则执行失败
+
+
+
+** int mrgSysWifiScan(ViSession vi, char *result, int len);
+
+   扫描可用的WIFI
+
+   vi :visa设备句柄
+
+   result：可用的WIFI命令，以逗号分隔
+
+   返回值：返回实际接收到的数据长度
+
+
+
+** int mrgSysWifiConfig(ViSession vi, char *name, char *passwd);
+
+   配置WIFI
+
+   vi :visa设备句柄
+
+   name：WIFi名称
+
+   passwd：密码
+
+   返回值：返回实际接收到的数据长度
+
+
+
+** int mrgSysWifiUpDown(ViSession vi, int state);
+
+   停止或启动无线网卡
+
+   vi :visa设备句柄
+
+   state：0表示停止， 1表示启用
+
+   返回值：0:执行成功； 否则执行失败
+
+
+
+** int mrgSysWifiCheckState(ViSession vi, int timeout_ms);
+
+   检查WIFI的连接状态
+
+   vi :visa设备句柄
+
+   timeout_ms：等待超时时间，单位：ms
+
+   返回值：0:连接超时或未连接； 1：连接成功
+
+
+
+** int mrgSysGetWifiConnected(ViSession vi, char *name);
+
+   查询当前已连接上的WIFI名称
+
+   vi :visa设备句柄
+
+   name：WIFI名
+
+   返回值：0:执行成功； 否则执行失败
+
+
+
+** int mrgSysSetHeartPeriod(ViSession vi, int value);
+
+   设置系统的心跳时间,单位:秒
+
+   vi :visa设备句柄
+
+   value: 心跳时间,单位:秒
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysGetHeartPeriod(ViSession vi, int *value);
+
+   查询系统的心跳时间,单位:秒
+
+   vi :visa设备句柄
+
+   value: 心跳时间,单位:秒
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysSetPowerOn(ViSession vi, int value);
+
+   设置系统上电值
+
+   vi :visa设备句柄
+
+   value: 上电值 DEFAULT|LAST
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysGetPowerOn(ViSession vi, int *value);
+
+   查询系统上电值
+
+   vi :visa设备句柄
+
+   value: 上电值 0:DEFAULT; 1:LAST
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysSetInterface(ViSession vi, int face);
+
+   设置系统控制接口
+
+   vi :visa设备句柄
+
+   interface: 上电值 LAN|USB|IO
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysGetInterface(ViSession vi, int *face);
+
+   查询系统控制接口
+
+   vi :visa设备句柄
+
+   interface: 控制接口 LAN|USB|IO
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgSysSetEmergencyStop(ViSession vi, int state);
+
+   设置紧急停止
+
+   vi :visa设备句柄
+
+   state: 0->OFF| 1->ON
+
+   返回值：0表示执行成功；－1表示执行失败
+
+   紧急停止时,会停止当前系统CAN网络中的所有设备,并设置紧急停止标志位.在紧急标志位被清除前,不接受任何CAN帧.
+
+   当state为OFF时,只是清除标志位
+
+
+
+** int mrgSysGetEmergencyStopState(ViSession vi, int *state);
+
+   查询紧急停止标志位,主要用来清除标志位
+
+   vi :visa设备句柄
+
+   state:  0->OFF| 1->ON
+
+   返回值：0表示执行成功；－1表示执行失败
+
+   紧急停止时,会自动设置此标志位
+
+
+
+** int mrgSysUpdateFileSearch(ViSession vi, char *fileList);
+
+   vi :visa设备句柄
+
+   查询可用的升级文件名字
+
+   成功返回0,失败返回-1,返回1表示没有U盘
+
+
+
+** int mrgSysUpdateFileStart(ViSession vi, char *filename);
+
+   mrgSysUpdateFileStart 更新固件
+
+   vi 句柄
+
+   filename 升级的文件名
+
+   返回值: 失败返回负数,成功返回0,超时返回1
+
+
+
+** int mrgSysUpdateFirmwareStatusQuery(ViSession vi);
+
+   mrgSysUpdateFirmwareStatusQuery 查询当前升级状态
+
+   vi
+
+   成功返回0，失败返回负数，正在升级返回1
+
+
+
+** int mrgScriptSearch(ViSession vi, int isUdisk, char *fileList);
+
+   获取MRHT上的py脚本列表
+
+   vi: visa句柄
+
+   isUdisk: 1为U盘,0为MRH-T内部
+
+   fileList 输出查询到文件列表
+
+   失败返回-1,成功返回0，返回1表示没有文件，返回2表示没有U盘
+
+
+
+** int mrgScriptConfig(ViSession vi, char *filename, int isBoot);
+
+   配置脚本及是否开机自启动
+
+   vi: visa句柄
+
+   filename: 要配置的文件名
+
+   isBoot: 设置为开机启动,0为不启动,1为启动
+
+   成功返回0, 失败返回-1
+
+   如果配置的文件名为U盘中的文件名，则会将U盘中的文件导入到MRHT内部并配置为当前脚本
+
+
+
+** int mrgScriptConfigQuery(ViSession vi, char *filename);
+
+   查询当前配置的脚本名字
+
+   vi: visa句柄
+
+   filename: 输出查询到的配置脚本名字
+
+   成功返回0, 失败返回-1
+
+
+
+** int mrgScriptRun(ViSession vi);
+
+   运行当前配置的脚本
+
+   vi: visa句柄
+
+   成功返回0, 失败返回-1
+
+
+
+** int mrgScriptStop(ViSession vi);
+
+   停止运行当前配置的脚本
+
+   vi: visa句柄
+
+   成功返回0, 失败返回-1
+
+
+
+** int mrgScriptGetCurrentStates(ViSession vi);
+
+   停止运行当前配置的脚本
+
+   vi: visa句柄
+
+   失败返回-1，运行返回1，停止返回0
+
+
+
+** int mrgSystemRunCmd(ViSession vi, char *cmd, int isBackground);
+
+   执行命令行命令
+
+   vi: visa句柄
+
+   cmd: 命令内容
+
+   isBackground: 是否后台执行
+
+   0表示阻塞执行时间短命令,如创建文件修改权限等
+
+   1表示将命令放到后台执行,如重启网卡,启动MCT等
+
+   失败返回-1,成功返回0
+
+
+
+
+
+* errorcode.h
+
+** int mrgErrorCodeConfigUpload(ViSession vi, int code, int *type, int *response, int *diagnose, int *enable);
+
+   上传错误代码配置
+
+   vi :visa设备句柄
+
+   code:错误代码值
+
+   type:输出类型，F/W/I ->错误/警告/信息 -> 1,2,3
+
+   diagnose: 输出诊断器是否配置 必配/选配 -> 0,1
+
+   response: 输出错误响应，A/B/C/D/E/F/G -> 1,2,3,4,5,6,7
+
+   enable: 输出是否使能 Y/N ->0,1
+
+
+
+** int mrgErrorCodeConfigDownload(ViSession vi, int code, int type, int response, int diagnose, int enable);
+
+   下载错误代码配置
+
+   vi :visa设备句柄
+
+   code:错误代码值
+
+   type:类型，F/W/I ->错误/警告/信息 -> 1,2,3
+
+   diagnose: 诊断器是否配置 必配/选配 -> 0,1
+
+   response: 错误响应，A/B/C/D/E/F/G -> 1,2,3,4,5,6,7
+
+   enable: 是否使能 Y/N ->0,1
+
+
+
+** int mrgErrorLogUpload(ViSession vi, int format, char* errorLog, int len);
+
+   返回错误文件
+
+   vi visa设备句柄
+
+   format NORMAL|ZIP|TARGZ|TAR -> 0,1,2,3
+
+   errorLog 返回错误日志
+
+   len 长度
+
+   获取数据长度
+
+
+
+** int mrgErrorLogClear(ViSession vi);
+
+   清除错误日志
+
+   vi :visa设备句柄
+
+
+
+
+
+* storage.h
+
+** int mrgStorageMotionFileQuery(ViSession vi, int type, char *fileList, int len);
+
+   查询存储器中，可用的运动文件
+
+   vi :visa设备句柄
+
+   type:0表示本地存储（本地文件系统）；1表示外部存储（U盘之类）
+
+   fileList: 点坐标文件名列表，以逗号分隔
+
+   len : fileList的缓存长度
+
+   返回值：大于零表示返回实际的字节数，小于零表示出错
+
+
+
+** int mrgStorageMotionFileDelete(ViSession vi, char *fileName);
+
+   删除本地存储器中的运动文件
+
+   vi :visa设备句柄
+
+   location:0表示本地存储（本地文件系统）；1表示外部存储（U盘之类）
+
+   fileList: 点坐标文件名列表，以逗号分隔
+
+   len : fileList的缓存长度
+
+   返回值：大于零表示返回实际的字节数，小于零表示出错
+
+
+
+** int mrgStorageMotionFileContextRead(ViSession vi, char *filename, char *context, int wantlen);
+
+   读取运动文件内容到上位机
+
+   vi :visa设备句柄
+
+   filename: 文件名
+
+   context：读取到的内容
+
+   wantlen： context（存储区）的长度
+
+   返回值：返回实际的文件长度
+
+
+
+** int mrgStorageMotionFileSaveContext(ViSession vi, char *context, int len, char *saveFileName);
+
+   保存运动文件内容到本地存储器
+
+   vi :visa设备句柄
+
+   context: 文件内容
+
+   len:文件内容长度
+
+   saveFileName：目的文件名
+
+   返回值：  0：写入成功；1：写入失败
+
+
+
+** int mrgStorageWriteFile(ViSession vi, int isUdisk, char *path, char *saveFileName, unsigned char *data, int dataLen);
+
+   保存文件内容
+
+   vi :visa设备句柄
+
+   isUdisk: 是否写在U盘上
+
+   path: 文件路径
+
+   saveFileName：目的文件名
+
+   data: 文件内容
+
+   dataLen:文件内容长度
+
+   返回值：  0：写入成功；1：写入失败
+
+
+
+** int mrgStorageReadFile(ViSession vi, int isUdisk, char *path, char* filename, unsigned char* context);
+
+   读取文件到上位机
+
+   vi :visa设备句柄
+
+   isUdisk: 是否写在U盘上
+
+   path: 文件路径
+
+   filename: 文件名
+
+   context：读取到的内容
+
+   返回值：返回实际的文件长度
+
+      
+
+
+
+* project.h
+
+** int mrgSetProjectMode(ViSession vi, int state);
+
+   设置系统为工程模式
+
+   vi :visa设备句柄
+
+   state: 0->OFF| 1->ON
+
+   返回值：0表示执行成功；－1表示执行失败
+
+   说明: 只有在工程模式下,才允许读取IO状态
+
+
+
+** int mrgProjectGetXinState(ViSession vi, int index, unsigned int *state)
+
+   查询外部IO的状态
+
+   vi :visa设备句柄
+
+   index: 0->所有,1->X1,2->X2...
+
+   state: 每一位表示一个IO的状态
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgProjectSetYout(ViSession vi, int index, int state);
+
+   设置系统的外部输出IO的状态
+
+   vi :visa设备句柄
+
+   index: 0->ALL, 1->YOUT1, 2->YOUT2,3->YOUT3, 4->YOUT4
+
+   state: 0->low, 1->high
+
+   返回值：0表示执行成功；－1表示执行失败
+
+   说明: 不支持 同时写出YOUT
+
+
+
+** int mrgProjectSetSerialNum(ViSession vi, char *serial);
+
+   设置系统的序列号
+
+   vi :visa设备句柄
+
+   serial: 序列号
+
+   返回值：0表示执行成功；－1表示执行失败
+
+
+
+** int mrgProjectGetSerialNum(ViSession vi, char *serial);
+
+   查询系统的序列号
+
+   vi :visa设备句柄
+
+   serial: 序列号
+
+   返回值：返回序列号的长度
+

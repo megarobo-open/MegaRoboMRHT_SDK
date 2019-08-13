@@ -1,0 +1,14 @@
+windows的库包括两种：
+1): MSVC编译 
+	产生MegaGateway.dll(动态库)和MegaGateway.lib(静态库)
+	其中动态库运行依赖：
+	pthreadVC2.dll
+	visa32.dll
+
+2): MingW编译 
+	产生MegaGateway-1.dll(动态库)和libMegaGateway-1.a(静态库)
+	其中动态库运行依赖：
+	libstdc++-6.dll
+	libgcc_s_dw2-1.dll
+	libwinpthread-1.dll
+	visa32.dll
