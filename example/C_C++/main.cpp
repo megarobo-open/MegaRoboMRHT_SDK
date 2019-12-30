@@ -1,8 +1,36 @@
 
 #include "MegaGateway.h"
 #include <stdio.h>
+#include <QDebug>
+#include <QThread>
+
+void msSleep( int ms )
+{
+    QThread::msleep( ms );
+}
 
 int main()
+{
+    int fd;
+
+    fd = mrgOpenGateWay(BUS_VXI, "TCPIP0::169.254.1.2::INSTR", 800);
+    qDebug()<<fd;
+    if ( fd > 0 )
+    {
+        int ret = mrgStorageWriteFile(fd, 0, (char *)"/media/usb0/",
+                              "mrh.tar.gz",
+                              (unsigned char*)"0123456789",
+                              10,
+                              NULL, NULL
+                              );
+        qDebug()<<ret;
+        mrgCloseGateWay( fd );
+    }
+
+    return 0;
+}
+
+int _main()
 {
     int i = 0;
     char *p = NULL, *pNext = NULL;

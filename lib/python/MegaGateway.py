@@ -48,18 +48,19 @@ class MageGateway(object):
     def mrgFindGateWay(self, devtype = 0):
         MAX_LENGTH=1024
         buf = create_string_buffer(MAX_LENGTH)
-        self._dll.mrgFindGateWay(devtype, buf, MAX_LENGTH, 1)
+        # self._dll.mrgFindGateWay(devtype, buf, MAX_LENGTH, 1)
+        self._dll.mrgFindGateWay(devtype, buf, MAX_LENGTH)
         if cbuf_to_string(buf) == '':
             return list()
         else:
             return list(filter(None, cbuf_to_string(buf).split(',') ))
 
 
-    def mrgOpenGateWay(self, desc, timeout_ms):
+    def mrgOpenGateWay(self, mode, desc, timeout_ms):
         '''
         打开设备 desc: 设备描述， timeout_ms: 超时时间
         '''
-        return self._dll.mrgOpenGateWay(string_to_charp(desc), timeout_ms)
+        return self._dll.mrgOpenGateWay(mode, string_to_charp(desc), timeout_ms)
 
 
     def mrgCloseGateWay(self, fd):
@@ -614,13 +615,16 @@ class MageGateway(object):
             return result.value
 
 ### int mrgGetRobotCurrentAngle(ViSession vi, int name, float * angles);
-    def mrgGetRobotCurrentAngle(self, fd, roboname):
-        result = c_float(-1)
-        ret = self._dll.mrgGetRobotCurrentAngle(fd,  roboname, byref(result) )
+    def mrgGetRobotCurrentAngle(self, fd, roboname, cnt = 5 ):
+        result = (c_float*64)()
+        ret = self._dll.mrgGetRobotCurrentAngle(fd,  roboname, result, cnt )
         if ret < 0:
-            return -1
+            return None 
         else:
-            return result.value
+            vals = []
+            for i in range( cnt ):
+                vals.append( result[i] )
+            return vals
 
 ### int mrgGetRobotCurrentPosition(ViSession vi, int name, float * x, float *y, float* z);
     def mrgGetRobotCurrentPosition(self, fd, roboname):

@@ -17,12 +17,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 #DEFINES += ANDROID      # 表示安卓
 
+INCLUDEPATH += "G:/work/mct/source/device/MegaRoboMRHT_SDK/src"
+win32:INCLUDEPATH += "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/Include"
+
+win32:LIBS += -L"C:/Program Files (x86)/IVI Foundation/VISA/WinNT/lib/msc"
+win32:LIBS += -L"G:/work/mct/lib"
+win32:LIBS += -L"G:/work/mct/3rdlib"
+
+win32:LIBS += -lmrx-device
+
+win32:LIBS += -llibws2_32 -llibiphlpapi
+
+win32:LIBS += -lvisa32
+
 unix {
     contains(DEFINES, ANDROID) {
         DEFINES += VXI_NOT_SUPPORT
     }
 }
-include(../../src/MegaGateway.pri)
+#include(../../src/MegaGateway.pri)
 
 SOURCES += \
     main.cpp

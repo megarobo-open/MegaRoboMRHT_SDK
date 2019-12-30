@@ -11,7 +11,7 @@ if __name__ == "__main__":
     gw = MageGateway()
 ###############################################################################
     ### 查找网关
-    mrhtList = gw.mrgFindGateWay(0)
+    mrhtList = gw.mrgFindGateWay(1)
     mrhtCount = len(mrhtList)
     if mrhtCount == 0:
         print("MRHT Not Found!")
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     else:
         for index in range(mrhtCount):
             mrht = mrhtList[index]
-            visa =  gw.mrgOpenGateWay(mrht, 800)
+            visa =  gw.mrgOpenGateWay(1, mrht, 800)
             print( "%02d: MRHT:[%s],\tIDN:[%s]" % (index, mrht, gw.mrgGateWayIDNQuery(visa) ) )
             ret =  gw.mrgCloseGateWay(visa)
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     ### 打开网关
     mrht = mrhtList[int(device_index)]
-    visa =  gw.mrgOpenGateWay(mrht, 800)
+    visa =  gw.mrgOpenGateWay(1, mrht, 800)
     IDN = gw.mrgGateWayIDNQuery(visa)
     print("MRHT Open[%s]: %s" % (visa, IDN))
 
@@ -95,28 +95,39 @@ if __name__ == "__main__":
         ### 前后
         gw.mrgRobotRelMove(visa, robotID, -1, 150, 0, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
 
         gw.mrgRobotRelMove(visa, robotID, -1, -150, 0, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
+
         ### 右转
         gw.mrgRobotRelMove(visa, robotID, -1, 0, -200, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
         
         gw.mrgRobotRelMove(visa, robotID, -1, 0, 200, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
+
         ### 左转
         gw.mrgRobotRelMove(visa, robotID, -1, 0, 200, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
         
         gw.mrgRobotRelMove(visa, robotID, -1, 0, -200, 0, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
+
         ### 上下
         gw.mrgRobotRelMove(visa, robotID, -1, 0, 0, -300, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
         
         gw.mrgRobotRelMove(visa, robotID, -1, 0, 0, 300, 2, 0)
         print( gw.mrgGetRobotCurrentPosition(visa, robotID) )
-
+        print( gw.mrgGetRobotCurrentAngle(visa, robotID))
+        
         pass
 
     gw.mrgRobotStop(visa, robotID, -1)

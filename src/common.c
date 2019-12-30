@@ -204,8 +204,8 @@ unsigned short makeCRC16(unsigned char *pu8Buf, unsigned int u32Len)
     return (u16CRC);
 }
 
-#include "libssh2_config.h"
-#include <libssh2.h>
+//#include "libssh2_config.h"
+//#include <libssh2.h>
 
 //#ifdef HAVE_WINSOCK2_H
 //# include <winsock2.h>

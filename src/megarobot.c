@@ -2009,7 +2009,7 @@ EXPORT_API int CALL mrgGetRobotToolPosition(ViSession vi, int robotname, float *
 * 返回值：大于零 表示返回角度值的个数，小于等于零表示出错
 * 说明: angles是不安全的，请在外部确保angles的空间足够. 对于T4来说,如果处于零位时,各轴角度为 [0,180,90,90]
 */
-EXPORT_API int CALL mrgGetRobotCurrentAngle(ViSession vi, int robotname,float * angles)
+EXPORT_API int CALL mrgGetRobotCurrentAngle(ViSession vi, int robotname,float * angles )
 {
     int retlen = 0;
     char args[SEND_BUF_LEN];
@@ -2034,7 +2034,7 @@ EXPORT_API int CALL mrgGetRobotCurrentAngleRefZero(ViSession vi, int robotname, 
     int ret = 0;
     int i;
     float tmp[5];
-    ret = mrgGetRobotCurrentAngle(vi, robotname, tmp);
+    ret = mrgGetRobotCurrentAngle(vi, robotname, tmp );
     for (i = 0; i < ret; i++)
     {
         switch (i)
