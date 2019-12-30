@@ -1,3 +1,13 @@
 build-*/
 *.user
 *.filters
+src/Debug/
+src/Release/
+example/C_C++/.vs
+lib/python/__pycache__/
+*.exp
+*.iobj
+*.ipdb
+*.pdb
+__*.dll
+_*.dll

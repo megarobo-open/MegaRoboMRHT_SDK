@@ -45,7 +45,7 @@ class MageGateway(object):
     '''
     查找设备, devtype: 0表示LAN 1表示USB
     '''
-    def mrgFindGateWay(self, devtype = 0):
+    def mrgFindGateWay(self, devtype = 1 ):
         MAX_LENGTH=1024
         buf = create_string_buffer(MAX_LENGTH)
         # self._dll.mrgFindGateWay(devtype, buf, MAX_LENGTH, 1)
